@@ -44,15 +44,12 @@ body {
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
+  width: 30%;
 }
 
-.logo-img {
-  width: 24px;
-  height: 24px;
+.logoImg {
+  width: 100%;
+  height: auto;
 }
 
 .units-menu {
