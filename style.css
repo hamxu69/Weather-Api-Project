@@ -46,7 +46,7 @@ body {
 }
 
 .logo {
-  width: 30%;
+  width: 20%;
 }
 
 .logoImg {
@@ -69,13 +69,13 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-family: var(--body-font);
 }
 
 .btn-icon {
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: auto;
 }
 
 .dropdown {
@@ -388,8 +388,11 @@ body {
 /* Responsive Overrides (Translates cleanly down to Mobile 375px layouts) */
 @media (max-width: 920px) {
   .header {
-    max-width: 100%;
+    max-width: 80%;
     margin: 20px auto 40px auto;
+  }
+  .logo{
+    width: 35%;
   }
   body {
     padding: 16px;
@@ -429,6 +432,9 @@ body {
   .hero-info {
     text-align: center;
   }
+  .logo{
+    width: 45%;
+  }
   .hero {
     background: url(images/bg-today-small.svg);
     flex-direction: column;
@@ -441,4 +447,11 @@ body {
   .scroll-row {
     grid-template-columns: repeat(2, 1fr);
   }
+    .header {
+        max-width: 100%;
+    }
+    .units-btn,
+.day-btn {
+  font-size: 1rem;
+}
 }
