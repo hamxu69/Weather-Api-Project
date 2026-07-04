@@ -173,7 +173,7 @@ body {
   background-color: var(--primary-blue);
   color: var(--white);
   border: none;
-  padding: 0 24px;
+  padding: 14px 24px;
   border-radius: 12px;
   font-family: var(--body-font);
   font-size: 1.2rem;
@@ -216,12 +216,16 @@ body {
   flex-direction: column;
   gap: 24px;
 }
-
 .hero {
   background: url(images/bg-today-large.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+
   border: none;
   padding: 102px 32px;
-  background-repeat: no-repeat;
+  border-radius: 25px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -245,7 +249,7 @@ body {
 
 .weather-img {
   width: auto;
-  height: clamp(3.5rem, 8vw, 6rem);
+  height: clamp(5.5rem, 8vw, 6rem);
 }
 
 .temp {
@@ -400,7 +404,6 @@ body {
     gap: 24px;
   }
   .hero-weather {
-    width: 100%;
     justify-content: space-between;
   }
   .stats {
@@ -420,7 +423,17 @@ body {
   .search-box {
     max-width: 100%;
     flex-direction: column;
-    padding: ;
+  }
+  .hero-info {
+    text-align: center;
+  }
+  .hero {
+    background: url(images/bg-today-small.svg);
+    flex-direction: column;
+    background-repeat: no-repeat;
+    align-items: center;
+    gap: 40px;
+    padding: 52px 32px;
   }
   .scroll-row {
     grid-template-columns: repeat(2, 1fr);
