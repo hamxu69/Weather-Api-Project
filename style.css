@@ -251,7 +251,6 @@ body {
 .temp {
   font-size: clamp(4rem, 6vw, 6rem);
   font-weight: 500;
-  
 }
 
 .stats {
@@ -296,16 +295,16 @@ body {
 }
 
 .day-card {
-     background-color: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px 8px;
-    min-width: 90px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px 8px;
+  min-width: 90px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .day {
@@ -384,6 +383,10 @@ body {
 
 /* Responsive Overrides (Translates cleanly down to Mobile 375px layouts) */
 @media (max-width: 900px) {
+  .header {
+    max-width: 100%;
+    margin: 20px auto 40px auto;
+  }
   body {
     padding: 16px;
   }
@@ -415,7 +418,9 @@ body {
 
 @media (max-width: 480px) {
   .search-box {
+    max-width: 100%;
     flex-direction: column;
+    padding: ;
   }
   .scroll-row {
     grid-template-columns: repeat(2, 1fr);
