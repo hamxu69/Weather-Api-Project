@@ -6,7 +6,7 @@ const selectedDay = document.querySelector(".selected-day");
 const unitDrop = document.querySelector(".units-menu");
 console.log(button, dropdown);
 
-button.addEventListener("click", (e) => {
+unitDrop.addEventListener("click", (e) => {
   e.stopPropagation();
   dropdown.classList.toggle("hidden");
 });
