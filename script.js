@@ -11,7 +11,19 @@ unitDrop.addEventListener("click", (e) => {
   e.stopPropagation();
   drop.classList.toggle("hidden");
 });
+const items = document.querySelectorAll(".drop-item");
 
+items.forEach((item) => {
+  item.addEventListener("click", function () {
+    const selected = document.querySelectorAll(".drop-item.selected");
+
+    if (this.classList.contains("selected")) {
+      this.classList.remove("selected");
+    } else if (selected.length < 3) {
+      this.classList.add("selected");
+    }
+  });
+});
 button.addEventListener("click", (e) => {
   e.stopPropagation();
   dropdown.classList.toggle("hidden");
