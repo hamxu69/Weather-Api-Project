@@ -12,7 +12,7 @@ unitDrop.addEventListener("click", (e) => {
   drop.classList.toggle("hidden");
 });
 const items = document.querySelectorAll(".drop-item");
-
+// just make classname for 3 different category and use the if condition to mark them correctly also add span
 items.forEach((item) => {
   item.addEventListener("click", function () {
     const selected = document.querySelectorAll(".drop-item.selected");
