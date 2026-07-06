@@ -59,8 +59,52 @@ groups.forEach((group) => {
   });
 });
 document.addEventListener("click", () => {
-
   drop.classList.add("hidden");
   searchDrop.classList.add("hidden");
   dropdown.classList.add("hidden");
 });
+async function getData() {
+  try {
+    const response = await fetch(
+      "https://api.openweathermap.org/data/2.5/weather?q=Lahore&appid=185e4b8f7e84417023d9c592ac1b4cc3&units=metric",
+    );
+    if (!response.ok) {
+      throw new Error("Fetching failed");
+    }
+    const data = await response.json();
+    display(data) 
+    
+  } catch (error) {
+    console.error(error);
+  }
+}
+const currentDate = new Date().toLocaleDateString("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+getData();
+function display(apiData) {
+  console.log(apiData);
+  
+  const heroTemp = apiData.main.temp
+  const feelsLike = apiData.main.feels_like
+  const humidity = apiData.main.humidity
+  const windy = apiData.wind.speed
+  const name = apiData.name
+
+  console.log(heroTemp);
+  const hero = document.querySelector('.heroTemp')
+  const feels = document.querySelector('#feelsLike')
+  const humidityData = document.querySelector('#humid')
+  const wind = document.querySelector('#wind')
+  const date = document.querySelector('#date')
+  const cityName = document.querySelector('#nameCity')
+  date.textContent = currentDate
+  cityName.textContent = name
+  hero.textContent = Math.round(heroTemp)
+  feels.textContent = `${Math.round(feelsLike)}°`
+  wind.textContent = `${Math.round(windy)}km/h`
+}
