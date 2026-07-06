@@ -5,25 +5,8 @@ const drop = document.querySelector(".dropdown");
 const searchDrop = document.querySelector(".search-drop");
 const selectedDay = document.querySelector(".selected-day");
 const unitDrop = document.querySelector(".units-btn");
-console.log(button, dropdown);
+// console.log(button, dropdown);
 
-unitDrop.addEventListener("click", (e) => {
-  e.stopPropagation();
-  drop.classList.toggle("hidden");
-});
-const items = document.querySelectorAll(".drop-item");
-// just make classname for 3 different category and use the if condition to mark them correctly also add span
-items.forEach((item) => {
-  item.addEventListener("click", function () {
-    const selected = document.querySelectorAll(".drop-item.selected");
-
-    if (this.classList.contains("selected")) {
-      this.classList.remove("selected");
-    } else if (selected.length < 3) {
-      this.classList.add("selected");
-    }
-  });
-});
 button.addEventListener("click", (e) => {
   e.stopPropagation();
   dropdown.classList.toggle("hidden");
@@ -52,6 +35,37 @@ cities.forEach((city) => {
       this.classList.add("selected");
       searchInput.value = this.textContent;
       searchDrop.classList.add("hidden");
+    });
+  });
+});
+
+unitDrop.addEventListener("click", (e) => {
+  e.stopPropagation();
+  drop.classList.toggle("hidden");
+});
+// const tempList = document.querySelectorAll(".temp div");
+// tempList.forEach((tempOption) => {
+//   tempOption.addEventListener("click", function () {
+//     tempList.forEach((el) => {
+//       el.classList.remove("selected");
+//     });
+//     this.classList.add("selected");
+//   });
+// });
+const groups = document.querySelectorAll(".drop-group");
+
+groups.forEach((group) => {
+  const items = group.querySelectorAll(".drop-item");
+
+  items.forEach((item) => {
+    item.addEventListener("click", function () {
+
+      items.forEach((el) => {
+        el.classList.remove("selected");
+      });
+
+      this.classList.add("selected");
+
     });
   });
 });
