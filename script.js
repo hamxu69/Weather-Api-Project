@@ -87,24 +87,23 @@ const currentDate = new Date().toLocaleDateString("en-US", {
 
 getData();
 function display(apiData) {
-  console.log(apiData);
-  
-  const heroTemp = apiData.main.temp
-  const feelsLike = apiData.main.feels_like
-  const humidity = apiData.main.humidity
-  const windy = apiData.wind.speed
-  const name = apiData.name
+  const heroTemp = apiData.main.temp;
+  const feelsLike = apiData.main.feels_like;
+  const humidity = apiData.main.humidity;
+  const windy = apiData.wind.speed;
+  const name = apiData.name;
 
-  console.log(heroTemp);
-  const hero = document.querySelector('.heroTemp')
-  const feels = document.querySelector('#feelsLike')
-  const humidityData = document.querySelector('#humid')
-  const wind = document.querySelector('#wind')
-  const date = document.querySelector('#date')
-  const cityName = document.querySelector('#nameCity')
-  date.textContent = currentDate
-  cityName.textContent = name
-  hero.textContent = Math.round(heroTemp)
-  feels.textContent = `${Math.round(feelsLike)}°`
-  wind.textContent = `${Math.round(windy)}km/h`
+  const hero = document.querySelector(".heroTemp");
+  const feels = document.querySelector("#feelsLike");
+  const humidityData = document.querySelector("#humid");
+  const wind = document.querySelector("#wind");
+  const date = document.querySelector("#date");
+  const cityName = document.querySelector("#nameCity");
+
+  date.textContent = currentDate;
+  cityName.textContent = name;
+  hero.textContent = Math.round(heroTemp);
+  feels.textContent = `${Math.round(feelsLike)}°`;
+  humidityData.textContent = `${humidity}%`;
+  wind.textContent = `${Math.round(windy * 3.6)} km/h`;
 }
