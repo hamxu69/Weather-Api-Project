@@ -6,7 +6,12 @@ const searchDrop = document.querySelector(".search-drop");
 const selectedDay = document.querySelector(".selected-day");
 const unitDrop = document.querySelector(".units-btn");
 // console.log(button, dropdown);
-
+const currentDate = new Date().toLocaleDateString("en-US", {
+  weekday: "long",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
 button.addEventListener("click", (e) => {
   e.stopPropagation();
   dropdown.classList.toggle("hidden");
@@ -23,11 +28,6 @@ days.forEach((day) => {
   });
 });
 
-searchInput.addEventListener("click", (e) => {
-  e.stopPropagation();
-  searchDrop.classList.remove("hidden");
-  console.log(searchDrop);
-});
 const cities = document.querySelectorAll(".search-item");
 cities.forEach((city) => {
   city.addEventListener("click", function () {
@@ -64,46 +64,64 @@ document.addEventListener("click", () => {
   dropdown.classList.add("hidden");
 });
 async function getData() {
-  try {
-    const response = await fetch(
-      "https://api.openweathermap.org/data/2.5/weather?q=Lahore&appid=185e4b8f7e84417023d9c592ac1b4cc3&units=metric",
-    );
-    if (!response.ok) {
-      throw new Error("Fetching failed");
-    }
-    const data = await response.json();
-    display(data) 
-    
-  } catch (error) {
-    console.error(error);
-  }
+  const city = "lahore";
+
+  const geoResponse = await fetch(
+    `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
+  );
+  const geoData = await geoResponse.json();
+  const longitude = geoData.results[0].longitude;
+  const latitude = geoData.results[0].latitude;
+
+  const response = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weather_code,precipitation_probability&daily=temperature_2m_max,temperature_2m_min&forecast_days=7&current=temperature_2m`,
+  );
+
+  const data = await response.json();
+
+  console.log(geoData);
+  console.log(data);
+
+  renderHero(data, geoData);
 }
-const currentDate = new Date().toLocaleDateString("en-US", {
-  weekday: "long",
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-});
 
 getData();
-function display(apiData) {
-  const heroTemp = apiData.main.temp;
-  const feelsLike = apiData.main.feels_like;
-  const humidity = apiData.main.humidity;
-  const windy = apiData.wind.speed;
-  const name = apiData.name;
+// function display(apiData, geoData) {
+// const currentTemperature = apiData.main.temp;
+// const feelsLikeTemperature = apiData.main.feels_like;
+// const humidityPercentage = apiData.main.humidity;
+// const windSpeed = apiData.wind.speed;
+// const countryName = geoData.address.country;
+// const cityName = geoData.address.city;
 
-  const hero = document.querySelector(".heroTemp");
-  const feels = document.querySelector("#feelsLike");
-  const humidityData = document.querySelector("#humid");
-  const wind = document.querySelector("#wind");
-  const date = document.querySelector("#date");
-  const cityName = document.querySelector("#nameCity");
+// const heroTemperatureElement = document.querySelector(".heroTemp");
+// const feelsLikeElement = document.querySelector("#feelsLike");
+// const humidityElement = document.querySelector("#humid");
+// const windSpeedElement = document.querySelector("#wind");
+// const currentDateElement = document.querySelector("#date");
+// const cityNameElement = document.querySelector("#nameCity");
 
-  date.textContent = currentDate;
-  cityName.textContent = name;
-  hero.textContent = Math.round(heroTemp);
-  feels.textContent = `${Math.round(feelsLike)}°`;
-  humidityData.textContent = `${humidity}%`;
-  wind.textContent = `${Math.round(windy * 3.6)} km/h`;
+// currentDateElement.textContent = currentDate;
+// cityNameElement.textContent = cityName;
+// heroTemperatureElement.textContent = Math.round(currentTemperature);
+// feelsLikeElement.textContent = `${Math.round(feelsLikeTemperature)}°`;
+// humidityElement.textContent = `${humidityPercentage}%`;
+// windSpeedElement.textContent = `${Math.round(windSpeed * 3.6)} km/h`;
+// }
+
+function renderHero(data, geoData) {
+  const heroPanel = document.querySelector(".hero");
+  console.log(heroPanel);
+  const html = `<div class="renderHero">
+              <div class="hero-info">
+                <h2 id="nameCity">${geoData.results[0].name}, ${geoData.results[0].country}</h2>
+                <p id="date">${currentDate}</p>
+              </div>
+              <div class="hero-weather">
+                <img src="images/icon-sunny.webp" alt="Sunny" class="weather-img"/>
+                <span class="temp"><i class="heroTemp">${Math.round(data.current.temperature_2m)}</i> °</span>
+              </div>
+            </div>`;
+  heroPanel.innerHTML = html;
 }
+renderHero();
