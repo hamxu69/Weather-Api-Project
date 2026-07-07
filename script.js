@@ -3,10 +3,12 @@ const searchInput = document.querySelector(".search-input");
 const dropdown = document.querySelector(".day-dropdown");
 const drop = document.querySelector(".dropdown");
 const searchDrop = document.querySelector(".search-drop");
+const grid = document.querySelector(".grid");
 function cityName() {
   if (searchInput.value.trim()) {
     const city = searchInput.value.trim();
     getData(city);
+    searchInput.value = "";
   } else {
     getData("Lahore");
   }
@@ -74,62 +76,64 @@ document.addEventListener("click", () => {
 });
 
 async function getData(city) {
-  const capitalResponse = await fetch(`https://countries.dev/name/${city}`);
+  try {
+    const geoResponse = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
+    );
 
-  const capitalData = await capitalResponse.json();
+    if (!geoResponse.ok) {
+      throw new Error("Failed to fetch location.");
+    }
 
-  console.log(capitalData[0].capital); // Islamabad
-  const required = capitalData[0].capital;
-  const geoResponse = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${required}&count=1`,
-  );
-  const geoData = await geoResponse.json();
-  const longitude = geoData.results[0].longitude;
-  const latitude = geoData.results[0].latitude;
+    const geoData = await geoResponse.json();
 
-  const response = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weather_code,precipitation_probability&daily=temperature_2m_max,temperature_2m_min&forecast_days=7&current=temperature_2m`,
-  );
+    if (!geoData.results) {
+      throw new Error("Location not found");
+    }
 
-  const data = await response.json();
+    const { latitude, longitude } = geoData.results[0];
 
-  console.log(geoData);
-  console.log(data);
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m`,
+    );
 
-  renderHero(data, geoData);
+    if (!response.ok) {
+      throw new Error("Failed to fetch weather data");
+    }
+
+    const data = await response.json();
+
+    console.log(geoData);
+    console.log(data);
+
+    renderHero(data, geoData);
+  } catch (error) {
+    console.error(error);
+    grid.classList.add("unvalid");
+  }
 }
-
 cityName();
-// function display(apiData, geoData) {
-// const currentTemperature = apiData.main.temp;
-// const feelsLikeTemperature = apiData.main.feels_like;
-// const humidityPercentage = apiData.main.humidity;
-// const windSpeed = apiData.wind.speed;
-// const countryName = geoData.address.country;
-// const cityName = geoData.address.city;
-
-// const heroTemperatureElement = document.querySelector(".heroTemp");
-// const feelsLikeElement = document.querySelector("#feelsLike");
-// const humidityElement = document.querySelector("#humid");
-// const windSpeedElement = document.querySelector("#wind");
-// const currentDateElement = document.querySelector("#date");
-// const cityNameElement = document.querySelector("#nameCity");
-
-// currentDateElement.textContent = currentDate;
-// cityNameElement.textContent = cityName;
-// heroTemperatureElement.textContent = Math.round(currentTemperature);
-// feelsLikeElement.textContent = `${Math.round(feelsLikeTemperature)}°`;
-// humidityElement.textContent = `${humidityPercentage}%`;
-// windSpeedElement.textContent = `${Math.round(windSpeed * 3.6)} km/h`;
-// }
+function display(data, geo) {}
 
 function renderHero(data, geo) {
-  console.log(geo.results[0].name);
-
   const heroPanel = document.querySelector(".hero");
   const nameCity = geo.results[0].name;
   const country = geo.results[0].country;
   const temperature = Math.round(data.current.temperature_2m);
+  const precipitation = data.current.precipitation;
+  const feelsLikeTemperature = data.current.apparent_temperature;
+  const humidityPercentage = data.current.relative_humidity_2m;
+  const windSpeed = data.current.wind_speed_10m;
+
+  const feelsLikeElement = document.querySelector("#feelsLike");
+  const humidityElement = document.querySelector("#humid");
+  const windSpeedElement = document.querySelector("#wind");
+  const precipitationElement = document.querySelector("#precipitation");
+
+  precipitationElement.textContent = `${precipitation} mm`;
+  feelsLikeElement.textContent = `${Math.round(feelsLikeTemperature)}°`;
+  humidityElement.textContent = `${humidityPercentage}%`;
+  windSpeedElement.textContent = `${Math.round(windSpeed)} km/h`;
   const html = `
     <div class="renderHero">
       <div class="hero-info">
@@ -145,4 +149,5 @@ function renderHero(data, geo) {
     </div>
   `;
   heroPanel.innerHTML = html;
+  grid.classList.remove("unvalid");
 }

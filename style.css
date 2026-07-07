@@ -255,6 +255,41 @@ body {
   gap: 24px;
 }
 
+/* Invalid state */
+.grid.unvalid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  background-color: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  position: relative;
+}
+
+/* Hide all existing content */
+.grid.unvalid > * {
+  display: none;
+}
+
+/* Show error icon */
+.grid.unvalid::before {
+  content: "";
+  width: 100px;
+  height: 100px;
+  background: url("images/icon-retry.svg") center/contain no-repeat;
+  opacity: 0.5;
+  /* animation: spin 2s linear infinite; */
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
 .main-panel {
   display: flex;
   flex-direction: column;
