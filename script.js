@@ -3,6 +3,15 @@ const searchInput = document.querySelector(".search-input");
 const dropdown = document.querySelector(".day-dropdown");
 const drop = document.querySelector(".dropdown");
 const searchDrop = document.querySelector(".search-drop");
+function cityName() {
+  if (searchInput.value.trim()) {
+    const city = searchInput.value.trim();
+    getData(city);
+  } else {
+    getData("Lahore");
+  }
+}
+document.querySelector(".search-btn").addEventListener("click", cityName);
 const selectedDay = document.querySelector(".selected-day");
 const unitDrop = document.querySelector(".units-btn");
 // console.log(button, dropdown);
@@ -63,8 +72,13 @@ document.addEventListener("click", () => {
   searchDrop.classList.add("hidden");
   dropdown.classList.add("hidden");
 });
-async function getData() {
-  const city = "lahore";
+
+async function getData(city) {
+  const capitalResponse = await fetch("https://countries.dev/name/Pakistan");
+
+  const capitalData = await capitalResponse.json();
+
+  console.log(capitalData[0].capital); // Islamabad
 
   const geoResponse = await fetch(
     `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
@@ -85,7 +99,7 @@ async function getData() {
   renderHero(data, geoData);
 }
 
-getData();
+cityName();
 // function display(apiData, geoData) {
 // const currentTemperature = apiData.main.temp;
 // const feelsLikeTemperature = apiData.main.feels_like;
@@ -109,19 +123,26 @@ getData();
 // windSpeedElement.textContent = `${Math.round(windSpeed * 3.6)} km/h`;
 // }
 
-function renderHero(data, geoData) {
+function renderHero(data, geo) {
+  console.log(geo.result[0].name);
+  
   const heroPanel = document.querySelector(".hero");
-  console.log(heroPanel);
-  const html = `<div class="renderHero">
-              <div class="hero-info">
-                <h2 id="nameCity">${geoData.results[0].name}, ${geoData.results[0].country}</h2>
-                <p id="date">${currentDate}</p>
-              </div>
-              <div class="hero-weather">
-                <img src="images/icon-sunny.webp" alt="Sunny" class="weather-img"/>
-                <span class="temp"><i class="heroTemp">${Math.round(data.current.temperature_2m)}</i> °</span>
-              </div>
-            </div>`;
+  const nameCity = geo.result[0].name;
+  const country = geo.results[0].country;
+  const temperature = Math.round(data.current.temperature_2m);
+  const html = `
+    <div class="renderHero">
+      <div class="hero-info">
+        <h2 id="nameCity">${nameCity}, ${country}</h2>
+        <p id="date">${currentDate}</p>
+      </div>
+      <div class="hero-weather">
+        <img src="images/icon-sunny.webp" alt="Sunny" class="weather-img" />
+        <span class="temp">
+          <i class="heroTemp">${temperature}</i> °
+        </span>
+      </div>
+    </div>
+  `;
   heroPanel.innerHTML = html;
 }
-renderHero();
