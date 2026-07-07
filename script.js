@@ -74,14 +74,14 @@ document.addEventListener("click", () => {
 });
 
 async function getData(city) {
-  const capitalResponse = await fetch("https://countries.dev/name/Pakistan");
+  const capitalResponse = await fetch(`https://countries.dev/name/${city}`);
 
   const capitalData = await capitalResponse.json();
 
   console.log(capitalData[0].capital); // Islamabad
-
+  const required = capitalData[0].capital;
   const geoResponse = await fetch(
-    `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
+    `https://geocoding-api.open-meteo.com/v1/search?name=${required}&count=1`,
   );
   const geoData = await geoResponse.json();
   const longitude = geoData.results[0].longitude;
@@ -124,10 +124,10 @@ cityName();
 // }
 
 function renderHero(data, geo) {
-  console.log(geo.result[0].name);
-  
+  console.log(geo.results[0].name);
+
   const heroPanel = document.querySelector(".hero");
-  const nameCity = geo.result[0].name;
+  const nameCity = geo.results[0].name;
   const country = geo.results[0].country;
   const temperature = Math.round(data.current.temperature_2m);
   const html = `
