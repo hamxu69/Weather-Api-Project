@@ -86,8 +86,9 @@ async function getData(city) {
     }
 
     const geoData = await geoResponse.json();
+// console.log(geoData.results[0]);
 
-    if (!geoData.results) {
+    if (geoData.results[0].name === geoData.results[0].country) {
       throw new Error("Location not found");
     }
 
