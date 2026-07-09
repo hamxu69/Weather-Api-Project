@@ -57,7 +57,7 @@ unitDrop.addEventListener("click", (e) => {
 const groups = document.querySelectorAll(".drop-group");
 groups.forEach((group) => {
   const items = group.querySelectorAll(".drop-item");
-  console.log(items);
+  // console.log(items);
   items.forEach((option) => {
     option.addEventListener("click", function () {
       console.log(option);
@@ -86,7 +86,7 @@ async function getData(city) {
     }
 
     const geoData = await geoResponse.json();
-// console.log(geoData.results[0]);
+    // console.log(geoData.results[0]);
 
     if (geoData.results[0].name === geoData.results[0].country) {
       throw new Error("Location not found");
@@ -95,7 +95,7 @@ async function getData(city) {
     const { latitude, longitude } = geoData.results[0];
 
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,weather_code,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7`,
     );
 
     if (!response.ok) {
@@ -103,10 +103,15 @@ async function getData(city) {
     }
 
     const data = await response.json();
+    const hourlyData = data.hourly;
+    const dailyData = data.daily;
+    const nameData = geoData.results[0];
 
-    console.log(geoData);
-    console.log(data);
+    console.log(hourlyData);
+    console.log(dailyData);
+    console.log(nameData);
 
+    renderDaily(dailyData, hourlyData);
     renderHero(data, geoData);
   } catch (error) {
     console.error(error);
@@ -114,7 +119,58 @@ async function getData(city) {
   }
 }
 cityName();
-function display(data, geo) {}
+function getWeatherIcon(weatherCode) {
+  if (weatherCode === 0) {
+    return "images/icon-sunny.webp";
+  }
+  if (weatherCode === 1 || weatherCode === 2) {
+    return "images/icon-partly-cloudy.webp";
+  }
+  if (weatherCode === 3) {
+    return "images/icon-overcast.webp";
+  }
+  if (weatherCode === 45 || weatherCode === 48) {
+    return "images/icon-fog.webp";
+  }
+  if ([51, 53, 55, 56, 57].includes(weatherCode)) {
+    return "images/icon-drizzle.webp";
+  }
+  if ([61, 63, 65, 66, 67, 80, 81, 82].includes(weatherCode)) {
+    return "images/icon-rain.webp";
+  }
+  if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) {
+    return "images/icon-snow.webp";
+  }
+  if ([95, 96, 99].includes(weatherCode)) {
+    return "images/icon-storm.webp";
+  }
+  return "images/icon-search.svg";
+}
+function getDay(dateString) {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    weekday: "long",
+  });
+}
+console.log(getDay("2005-04-24"));
+function renderDaily(hourlyData, dailyData) {
+  const dailyWeather = document.querySelector(".scroll-row");
+  let html = "";
+  dailyData.time.forEach((el, index) => {
+    console.log(dailyData.time[index]);
+
+    html += `            
+                <div class="day-card">
+                  <span class="day">${getDay(data.daily.time[index])}</span>
+                  <img src=${getWeatherIcon(data.daily.weather_code[index])} alt="Rain" class="day-img" />
+                  <div class="range">
+                    <span class="hi">${data.daily.temperature_2m_max[index]}</span><span class="low">${data.daily.temperature_2m_min[index]}</span>
+                  </div>
+                  </div>
+                  `;
+  });
+  dailyWeather.innerHTML = html;
+  console.log(data.daily.temperature_2m_max[0]);
+}
 
 function renderHero(data, geo) {
   const heroPanel = document.querySelector(".hero");
