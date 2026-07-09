@@ -256,7 +256,7 @@ body {
 }
 
 /* Invalid state */
-.grid.unvalid {
+.grid.unValid {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -268,12 +268,12 @@ body {
 }
 
 /* Hide all existing content */
-.grid.unvalid > * {
+.grid.unValid > * {
   display: none;
 }
 
 /* Show error icon */
-.grid.unvalid::before {
+.grid.unValid::before {
   content: "";
   width: 100px;
   height: 100px;

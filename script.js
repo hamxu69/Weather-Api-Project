@@ -57,7 +57,7 @@ unitDrop.addEventListener("click", (e) => {
 const groups = document.querySelectorAll(".drop-group");
 groups.forEach((group) => {
   const items = group.querySelectorAll(".drop-item");
-  console.log(items);
+  // console.log(items);
   items.forEach((option) => {
     option.addEventListener("click", function () {
       console.log(option);
@@ -106,7 +106,7 @@ async function getData(city) {
 
     console.log(data.hourly);
     console.log(data.daily);
-    zzzzzzzzzzzzzzzzz(data);
+    hello(data);
     renderHero(data, geoData);
   } catch (error) {
     console.error(error);
@@ -146,8 +146,8 @@ function getDay(dateString) {
     weekday: "long",
   });
 }
-console.log(getDay("2005-04-24"));
-function zzzzzzzzzzzzzzzzz(data) {
+// console.log(getDay("2005-04-24"));
+function hello(data) {
   const dailyWeather = document.querySelector(".scroll-row");
   let html = "";
   data.daily.time.forEach((el, index) => {
@@ -169,13 +169,20 @@ function zzzzzzzzzzzzzzzzz(data) {
 
 function renderHero(data, geo) {
   const heroPanel = document.querySelector(".hero");
-  const nameCity = geo.results[0].name;
-  const country = geo.results[0].country;
-  const temperature = Math.round(data.current.temperature_2m);
-  const precipitation = data.current.precipitation;
-  const feelsLikeTemperature = data.current.apparent_temperature;
-  const humidityPercentage = data.current.relative_humidity_2m;
-  const windSpeed = data.current.wind_speed_10m;
+  const { name, country } = geo.results[0];
+  const {
+    temperature_2m: temperature,
+    precipitation,
+    apparent_temperature: feelsLike,
+    humidityPercentage: humidity,
+    wind_speed_10m: windSpeed,
+  } = data.current;
+  // console.log(precipitation);
+  // const temperature = Math.round(data.current.temperature_2m);
+  // const precipitation = data.current.precipitation;
+  // const feelsLikeTemperature = data.current.apparent_temperature;
+  // const humidityPercentage = data.current.relative_humidity_2m;
+  // const windSpeed = data.current.wind_speed_10m;
 
   const feelsLikeElement = document.querySelector("#feelsLike");
   const humidityElement = document.querySelector("#humid");
@@ -183,17 +190,17 @@ function renderHero(data, geo) {
   const precipitationElement = document.querySelector("#precipitation");
 
   precipitationElement.textContent = `${precipitation} mm`;
-  feelsLikeElement.textContent = `${Math.round(feelsLikeTemperature)}°`;
-  humidityElement.textContent = `${humidityPercentage}%`;
+  feelsLikeElement.textContent = `${Math.round(feelsLike)}°`;
+  humidityElement.textContent = `${humidity}%`;
   windSpeedElement.textContent = `${Math.round(windSpeed)} km/h`;
   const html = `
     <div class="renderHero">
       <div class="hero-info">
-        <h2 id="nameCity">${nameCity}, ${country}</h2>
+        <h2 id="nameCity">${name}, ${country}</h2>
         <p id="date">${currentDate}</p>
       </div>
       <div class="hero-weather">
-        <img src="images/icon-sunny.webp" alt="Sunny" class="weather-img" />
+        <img src=${ge} alt="Sunny" class="weather-img" />
         <span class="temp">
           <i class="heroTemp">${temperature}</i> °
         </span>
@@ -201,5 +208,5 @@ function renderHero(data, geo) {
     </div>
   `;
   heroPanel.innerHTML = html;
-  grid.classList.remove("unvalid");
+  grid.classList.remove("unValid");
 }
