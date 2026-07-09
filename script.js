@@ -57,7 +57,7 @@ unitDrop.addEventListener("click", (e) => {
 const groups = document.querySelectorAll(".drop-group");
 groups.forEach((group) => {
   const items = group.querySelectorAll(".drop-item");
-  // console.log(items);
+  console.log(items);
   items.forEach((option) => {
     option.addEventListener("click", function () {
       console.log(option);
@@ -103,15 +103,10 @@ async function getData(city) {
     }
 
     const data = await response.json();
-    const hourlyData = data.hourly;
-    const dailyData = data.daily;
-    const nameData = geoData.results[0];
 
-    console.log(hourlyData);
-    console.log(dailyData);
-    console.log(nameData);
-
-    renderDaily(dailyData, hourlyData);
+    console.log(data.hourly);
+    console.log(data.daily);
+    zzzzzzzzzzzzzzzzz(data);
     renderHero(data, geoData);
   } catch (error) {
     console.error(error);
@@ -152,11 +147,11 @@ function getDay(dateString) {
   });
 }
 console.log(getDay("2005-04-24"));
-function renderDaily(hourlyData, dailyData) {
+function zzzzzzzzzzzzzzzzz(data) {
   const dailyWeather = document.querySelector(".scroll-row");
   let html = "";
-  dailyData.time.forEach((el, index) => {
-    console.log(dailyData.time[index]);
+  data.daily.time.forEach((el, index) => {
+    console.log(data.daily.time[index]);
 
     html += `            
                 <div class="day-card">
