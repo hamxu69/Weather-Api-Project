@@ -1,115 +1,46 @@
-import { useEffect, useRef, useState } from "react";
-import type { TempUnit, WindUnit, PrecipUnit } from "../types/weather";
-import { ThemeToggle } from "./ThemeToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { UnitsMenu } from "@/components/UnitsMenu";
+import { useTheme } from "@/context/ThemeProvider";
+import type { UnitSettings, PrecipUnit, TempUnit, WindUnit } from "@/types/weather";
 
-interface UnitsMenuProps {
-  temperature: TempUnit;
-  wind: WindUnit;
-  precipitation: PrecipUnit;
+interface HeaderProps {
+  units: UnitSettings;
+  onUnitsChange: (units: UnitSettings) => void;
   onTemperatureChange: (unit: TempUnit) => void;
   onWindChange: (unit: WindUnit) => void;
   onPrecipitationChange: (unit: PrecipUnit) => void;
 }
 
 export function Header({
-  temperature,
-  wind,
-  precipitation,
+  units,
+  onUnitsChange,
   onTemperatureChange,
   onWindChange,
   onPrecipitationChange,
-}: UnitsMenuProps) {
-  const [open, setOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+}: HeaderProps) {
+  const { theme } = useTheme();
+  const logoSrc = theme === "dark" ? "/images/logo.svg" : "/images/logo-light.svg";
 
   return (
-    <header className="header">
-      <div className="logo">
-        <img src="/images/logo.svg" className="logoImg" alt="Weather app logo" />
-      </div>
+    <header className="sticky top-0 z-40 mb-8 w-full border-b border-border bg-card/95 shadow-sm backdrop-blur-md dark:border-border/60 dark:bg-background/80 dark:shadow-none">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <a href="/" className="shrink-0">
+          <img
+            src={logoSrc}
+            className="h-8 w-auto sm:h-9"
+            alt="Weather app logo"
+          />
+        </a>
 
-      <div className="header-actions">
-        <ThemeToggle />
-
-        <div className="units-menu" ref={menuRef}>
-        <button
-          type="button"
-          className="units-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            setOpen((prev) => !prev);
-          }}
-        >
-          <img src="/images/icon-units.svg" alt="" className="btn-icon" />
-          Units
-          <img src="/images/icon-dropdown.svg" alt="" className="btn-icon" />
-        </button>
-
-        {!open ? null : (
-          <div className="dropdown">
-            <div className="drop-title">Switch to Imperial</div>
-            <div className="divider" />
-
-            <div className="drop-group">
-              <label>Temperature</label>
-              <div
-                className={`drop-item${temperature === "celsius" ? " selected" : ""}`}
-                onClick={() => onTemperatureChange("celsius")}
-              >
-                Celsius (°C)
-              </div>
-              <div
-                className={`drop-item${temperature === "fahrenheit" ? " selected" : ""}`}
-                onClick={() => onTemperatureChange("fahrenheit")}
-              >
-                Fahrenheit (°F)
-              </div>
-            </div>
-
-            <div className="drop-group">
-              <label>Wind Speed</label>
-              <div
-                className={`drop-item${wind === "kmh" ? " selected" : ""}`}
-                onClick={() => onWindChange("kmh")}
-              >
-                km/h
-              </div>
-              <div
-                className={`drop-item${wind === "mph" ? " selected" : ""}`}
-                onClick={() => onWindChange("mph")}
-              >
-                mph
-              </div>
-            </div>
-
-            <div className="drop-group">
-              <label>Precipitation</label>
-              <div
-                className={`drop-item${precipitation === "mm" ? " selected" : ""}`}
-                onClick={() => onPrecipitationChange("mm")}
-              >
-                Millimeters (mm)
-              </div>
-              <div
-                className={`drop-item${precipitation === "in" ? " selected" : ""}`}
-                onClick={() => onPrecipitationChange("in")}
-              >
-                Inches (in)
-              </div>
-            </div>
-          </div>
-        )}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeToggle />
+          <UnitsMenu
+            units={units}
+            onUnitsChange={onUnitsChange}
+            onTemperatureChange={onTemperatureChange}
+            onWindChange={onWindChange}
+            onPrecipitationChange={onPrecipitationChange}
+          />
         </div>
       </div>
     </header>
