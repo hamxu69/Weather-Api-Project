@@ -1,4 +1,3 @@
-/* Custom Variables */
 :root {
   --bg: hsl(243, 96%, 9%);
   --panel-bg: hsl(243, 27%, 20%);
@@ -15,7 +14,6 @@
   --heading-font: "Bricolage Grotesque", sans-serif;
 }
 
-/* Reset basics */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -31,12 +29,10 @@ body {
   min-height: 100vh;
 }
 
-/* Helper Utilities */
 .hidden {
   display: none !important;
 }
 
-/* Header & Dropdowns */
 .header {
   display: flex;
   justify-content: space-between;
@@ -97,7 +93,6 @@ body {
   font-size: 0.9rem;
   color: var(--text-light);
 }
-/* Sidebar Day Dropdown */
 
 .day-menu{
   position: relative;
@@ -167,7 +162,6 @@ body {
   font-size: 16px;
 }
 
-/* Typography & Global Layout */
 .title {
   font-family: var(--heading-font);
   font-weight: 700;
@@ -243,7 +237,6 @@ body {
   border-bottom: 1px solid var(--border-color);
 }
 
-/* Layout Grid system */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -267,29 +260,18 @@ body {
   position: relative;
 }
 
-/* Hide all existing content */
 .grid.unValid > * {
   display: none;
 }
 
-/* Show error icon */
 .grid.unValid::before {
   content: "";
   width: 100px;
   height: 100px;
   background: url("images/icon-retry.svg") center/contain no-repeat;
   opacity: 0.5;
-  /* animation: spin 2s linear infinite; */
 }
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
 
-  to {
-    transform: rotate(360deg);
-  }
-}
 .main-panel {
   display: flex;
   flex-direction: column;
@@ -364,7 +346,6 @@ body {
   font-weight: 0;
 }
 
-/* Daily Rows */
 .panel-title {
   font-size: 1.1rem;
   font-weight: 600;
@@ -464,7 +445,6 @@ body {
   font-weight: 500;
 }
 
-/* Responsive Overrides (Translates cleanly down to Mobile 375px layouts) */
 @media (max-width: 920px) {
   .header {
     max-width: 80%;
