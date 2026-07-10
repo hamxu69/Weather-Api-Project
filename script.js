@@ -1,17 +1,20 @@
+const heroPanel = document.querySelector(".hero");
 const button = document.querySelector(".day-btn");
 const searchInput = document.querySelector(".search-input");
 const dropdown = document.querySelector(".day-dropdown");
 const drop = document.querySelector(".dropdown");
 const searchDrop = document.querySelector(".search-drop");
 const grid = document.querySelector(".grid");
+const feelsLikeElement = document.querySelector("#feelsLike");
+const humidityElement = document.querySelector("#humid");
+const windSpeedElement = document.querySelector("#wind");
+const precipitationElement = document.querySelector("#precipitation");
+
+// ✅ Cleaner version
 function cityName() {
-  if (searchInput.value.trim()) {
-    const city = searchInput.value.trim();
-    getData(city);
-    searchInput.value = "";
-  } else {
-    getData("Lahore");
-  }
+  const city = searchInput.value.trim() || "Lahore";
+  getData(city);
+  searchInput.value = "";
 }
 document.querySelector(".search-btn").addEventListener("click", cityName);
 const selectedDay = document.querySelector(".selected-day");
@@ -36,17 +39,6 @@ days.forEach((day) => {
     this.classList.add("selected");
     selectedDay.textContent = this.textContent;
     dropdown.classList.add("hidden");
-  });
-});
-
-const cities = document.querySelectorAll(".search-item");
-cities.forEach((city) => {
-  city.addEventListener("click", function () {
-    cities.forEach((el) => {
-      searchInput.value = this.textContent;
-      searchDrop.classList.add("hidden");
-    });
-    this.classList.add("selected");
   });
 });
 
@@ -85,11 +77,18 @@ async function getData(city) {
       throw new Error("Failed to fetch location.");
     }
 
+    // ✅ FIX: Parse the JSON before using geoData.
     const geoData = await geoResponse.json();
-    // console.log(geoData.results[0]);
 
-    if (geoData.results[0].name === geoData.results[0].country) {
+    // ✅ FIX: Prevent errors if no location is returned.
+    if (!geoData.results || geoData.results.length === 0) {
       throw new Error("Location not found");
+    }
+
+    // NOTE:
+    // This works for your use case, but feature_code would be a better check.
+    if (geoData.results[0].name === geoData.results[0].country) {
+      throw new Error("Please search for a city");
     }
 
     const { latitude, longitude } = geoData.results[0];
@@ -104,13 +103,19 @@ async function getData(city) {
 
     const data = await response.json();
 
-    console.log(data.hourly);
-    console.log(data.daily);
+    // ✅ FIX: Removed unused variables.
+    // const dailyUpdate = data.hourly;
+    // const hourlyUpdate = data.daily;
+
+    // ✅ FIX: Removed debug logs.
+    // console.log(dailyUpdate);
+    // console.log(hourlyUpdate);
+
     hello(data);
     renderHero(data, geoData);
   } catch (error) {
     console.error(error);
-    grid.classList.add("unvalid");
+    grid.classList.add("unValid");
   }
 }
 cityName();
@@ -150,63 +155,61 @@ function getDay(dateString) {
 function hello(data) {
   const dailyWeather = document.querySelector(".scroll-row");
   let html = "";
+
   data.daily.time.forEach((el, index) => {
-    console.log(data.daily.time[index]);
+    // ✅ FIX: Removed debug log.
+    // console.log(data.daily.time[index]);
 
-    html += `            
-                <div class="day-card">
-                  <span class="day">${getDay(data.daily.time[index])}</span>
-                  <img src=${getWeatherIcon(data.daily.weather_code[index])} alt="Rain" class="day-img" />
-                  <div class="range">
-                    <span class="hi">${data.daily.temperature_2m_max[index]}</span><span class="low">${data.daily.temperature_2m_min[index]}</span>
-                  </div>
-                  </div>
-                  `;
+    html += `
+      <div class="day-card">
+        <span class="day">${getDay(data.daily.time[index])}</span>
+
+        <!-- ✅ FIX: Added quotes around src -->
+        <img src="${getWeatherIcon(data.daily.weather_code[index])}" alt="Rain" class="day-img" />
+
+        <div class="range">
+          <span class="hi">${data.daily.temperature_2m_max[index]}</span>
+          <span class="low">${data.daily.temperature_2m_min[index]}</span>
+        </div>
+      </div>
+    `;
   });
-  dailyWeather.innerHTML = html;
-  console.log(data.daily.temperature_2m_max[0]);
-}
 
+  dailyWeather.innerHTML = html;
+}
 function renderHero(data, geo) {
-  const heroPanel = document.querySelector(".hero");
   const { name, country } = geo.results[0];
   const {
     temperature_2m: temperature,
     precipitation,
     apparent_temperature: feelsLike,
-    humidityPercentage: humidity,
+    relative_humidity_2m: humidity,
     wind_speed_10m: windSpeed,
+    weather_code: weatherCode,
   } = data.current;
-  // console.log(precipitation);
-  // const temperature = Math.round(data.current.temperature_2m);
-  // const precipitation = data.current.precipitation;
-  // const feelsLikeTemperature = data.current.apparent_temperature;
-  // const humidityPercentage = data.current.relative_humidity_2m;
-  // const windSpeed = data.current.wind_speed_10m;
-
-  const feelsLikeElement = document.querySelector("#feelsLike");
-  const humidityElement = document.querySelector("#humid");
-  const windSpeedElement = document.querySelector("#wind");
-  const precipitationElement = document.querySelector("#precipitation");
 
   precipitationElement.textContent = `${precipitation} mm`;
   feelsLikeElement.textContent = `${Math.round(feelsLike)}°`;
   humidityElement.textContent = `${humidity}%`;
   windSpeedElement.textContent = `${Math.round(windSpeed)} km/h`;
   const html = `
-    <div class="renderHero">
-      <div class="hero-info">
-        <h2 id="nameCity">${name}, ${country}</h2>
-        <p id="date">${currentDate}</p>
-      </div>
-      <div class="hero-weather">
-        <img src=${ge} alt="Sunny" class="weather-img" />
-        <span class="temp">
-          <i class="heroTemp">${temperature}</i> °
-        </span>
-      </div>
-    </div>
-  `;
+<div class="renderHero">
+  <div class="hero-info">
+    <h2 id="nameCity">${name}, ${country}</h2>
+    <p id="date">${currentDate}</p>
+  </div>
+
+  <div class="hero-weather">
+    <!-- ✅ FIX: Added quotes around src -->
+    <img src="${getWeatherIcon(weatherCode)}" alt="Sunny" class="weather-img" />
+
+    <span class="temp">
+      <!-- ✅ Optional: Rounded the temperature -->
+      <i class="heroTemp">${Math.round(temperature)}</i> °
+    </span>
+  </div>
+</div>
+`;
   heroPanel.innerHTML = html;
   grid.classList.remove("unValid");
 }
