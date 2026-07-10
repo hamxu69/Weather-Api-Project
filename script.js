@@ -1,31 +1,29 @@
-const heroPanel = document.querySelector(".hero");
+const dailyWeather = document.querySelector(".scroll-row");
 const button = document.querySelector(".day-btn");
 const searchInput = document.querySelector(".search-input");
 const dropdown = document.querySelector(".day-dropdown");
 const drop = document.querySelector(".dropdown");
-const searchDrop = document.querySelector(".search-drop");
+const stats = document.querySelector(".stats");
 const grid = document.querySelector(".grid");
-const feelsLikeElement = document.querySelector("#feelsLike");
-const humidityElement = document.querySelector("#humid");
-const windSpeedElement = document.querySelector("#wind");
-const precipitationElement = document.querySelector("#precipitation");
-
-// ✅ Cleaner version
-function cityName() {
-  const city = searchInput.value.trim() || "Lahore";
-  getData(city);
-  searchInput.value = "";
-}
-document.querySelector(".search-btn").addEventListener("click", cityName);
 const selectedDay = document.querySelector(".selected-day");
 const unitDrop = document.querySelector(".units-btn");
-// console.log(button, dropdown);
 const currentDate = new Date().toLocaleDateString("en-US", {
   weekday: "long",
   month: "short",
   day: "numeric",
   year: "numeric",
 });
+
+function cityName() {
+  if (searchInput.value.trim()) {
+    const city = searchInput.value.trim();
+    getData(city);
+    searchInput.value = "";
+  } else {
+    getData("Lahore");
+  }
+}
+document.querySelector(".search-btn").addEventListener("click", cityName);
 button.addEventListener("click", (e) => {
   e.stopPropagation();
   dropdown.classList.toggle("hidden");
@@ -63,62 +61,8 @@ groups.forEach((group) => {
 });
 document.addEventListener("click", () => {
   drop.classList.add("hidden");
-  searchDrop.classList.add("hidden");
   dropdown.classList.add("hidden");
 });
-
-async function getData(city) {
-  try {
-    const geoResponse = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`,
-    );
-
-    if (!geoResponse.ok) {
-      throw new Error("Failed to fetch location.");
-    }
-
-    // ✅ FIX: Parse the JSON before using geoData.
-    const geoData = await geoResponse.json();
-
-    // ✅ FIX: Prevent errors if no location is returned.
-    if (!geoData.results || geoData.results.length === 0) {
-      throw new Error("Location not found");
-    }
-
-    // NOTE:
-    // This works for your use case, but feature_code would be a better check.
-    if (geoData.results[0].name === geoData.results[0].country) {
-      throw new Error("Please search for a city");
-    }
-
-    const { latitude, longitude } = geoData.results[0];
-
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,weather_code,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7`,
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch weather data");
-    }
-
-    const data = await response.json();
-
-    // ✅ FIX: Removed unused variables.
-    // const dailyUpdate = data.hourly;
-    // const hourlyUpdate = data.daily;
-
-    // ✅ FIX: Removed debug logs.
-    // console.log(dailyUpdate);
-    // console.log(hourlyUpdate);
-
-    hello(data);
-    renderHero(data, geoData);
-  } catch (error) {
-    console.error(error);
-    grid.classList.add("unValid");
-  }
-}
-cityName();
 function getWeatherIcon(weatherCode) {
   if (weatherCode === 0) {
     return "images/icon-sunny.webp";
@@ -151,33 +95,70 @@ function getDay(dateString) {
     weekday: "long",
   });
 }
-// console.log(getDay("2005-04-24"));
-function hello(data) {
-  const dailyWeather = document.querySelector(".scroll-row");
+async function getData(name) {
+  try {
+    const geoResponse = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${name}&count=1`,
+    );
+
+    if (!geoResponse.ok) {
+      throw new Error("Wrong city name");
+    }
+
+    const city = await geoResponse.json();
+
+    if (city.results[0].name === city.results[0].country) {
+      throw new Error("it's a country");
+    }
+
+    const { latitude, longitude } = city.results[0];
+
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,weather_code,precipitation_probability&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7`,
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch weather data");
+    }
+
+    const data = await response.json();
+
+    const hourlyUpdate = data.hourly;
+    const dailyUpdate = data.daily;
+    const currentUpdate = data.current;
+
+    cardsRender(dailyUpdate);
+    renderHero(currentUpdate, city);
+  } catch (error) {
+    console.error(error);
+    grid.classList.add("unValid");
+  }
+}
+
+function cardsRender(data) {
   let html = "";
-
-  data.daily.time.forEach((el, index) => {
-    // ✅ FIX: Removed debug log.
-    // console.log(data.daily.time[index]);
-
-    html += `
-      <div class="day-card">
-        <span class="day">${getDay(data.daily.time[index])}</span>
-
-        <!-- ✅ FIX: Added quotes around src -->
-        <img src="${getWeatherIcon(data.daily.weather_code[index])}" alt="Rain" class="day-img" />
-
-        <div class="range">
-          <span class="hi">${data.daily.temperature_2m_max[index]}</span>
-          <span class="low">${data.daily.temperature_2m_min[index]}</span>
-        </div>
-      </div>
-    `;
+  const {
+    time: time,
+    weather_code: weatherCode,
+    temperature_2m_min: tempMin,
+    temperature_2m_max: tempMax,
+  } = data;
+  time.forEach((el, index) => {
+    html += `            
+                <div class="day-card">
+                  <span class="day">${getDay(time[index])}</span>
+                  <img src=${getWeatherIcon(weatherCode[index])} alt="Rain" class="day-img" />
+                  <div class="range">
+                    <span class="hi">${Math.round(tempMax[index])}</span><span class="low">${Math.round(tempMin[index])}</span>
+                  </div>
+                </div>
+                  `;
   });
-
   dailyWeather.innerHTML = html;
 }
-function renderHero(data, geo) {
+
+function renderHero(dailyUpdate, geo) {
+  const heroPanel = document.querySelector(".hero");
   const { name, country } = geo.results[0];
   const {
     temperature_2m: temperature,
@@ -186,30 +167,42 @@ function renderHero(data, geo) {
     relative_humidity_2m: humidity,
     wind_speed_10m: windSpeed,
     weather_code: weatherCode,
-  } = data.current;
+  } = dailyUpdate;
 
-  precipitationElement.textContent = `${precipitation} mm`;
-  feelsLikeElement.textContent = `${Math.round(feelsLike)}°`;
-  humidityElement.textContent = `${humidity}%`;
-  windSpeedElement.textContent = `${Math.round(windSpeed)} km/h`;
   const html = `
-<div class="renderHero">
-  <div class="hero-info">
-    <h2 id="nameCity">${name}, ${country}</h2>
-    <p id="date">${currentDate}</p>
-  </div>
-
-  <div class="hero-weather">
-    <!-- ✅ FIX: Added quotes around src -->
-    <img src="${getWeatherIcon(weatherCode)}" alt="Sunny" class="weather-img" />
-
-    <span class="temp">
-      <!-- ✅ Optional: Rounded the temperature -->
-      <i class="heroTemp">${Math.round(temperature)}</i> °
-    </span>
-  </div>
-</div>
-`;
+    <div class="renderHero">
+      <div class="hero-info">
+        <h2 id="nameCity">${name}, ${country}</h2>
+        <p id="date">${currentDate}</p>
+      </div>
+      <div class="hero-weather">
+        <img src=${getWeatherIcon(weatherCode)} alt="Sunny" class="weather-img" />
+        <span class="temp">
+          <i class="heroTemp">${Math.round(temperature)}</i> °
+        </span>
+      </div>
+    </div>
+  `;
+  const htmlOne = `
+              <div class="card">
+              <span class="label">Feels Like</span>
+              <span class="value" id="feelsLike">${Math.round(feelsLike)}°</span>
+            </div>
+            <div class="card">
+              <span class="label" >Humidity</span>
+              <span class="value" id="humid">${humidity}%</span>
+            </div>
+            <div class="card">
+              <span class="label">Wind</span>
+              <span class="value" id="wind">${windSpeed} km/h</span>
+            </div>
+            <div class="card">
+              <span class="label">Precipitation</span>
+              <span class="value" id="precipitation">${precipitation} mm</span>
+            </div>
+  `;
+  stats.innerHTML = htmlOne;
   heroPanel.innerHTML = html;
   grid.classList.remove("unValid");
 }
+cityName();
