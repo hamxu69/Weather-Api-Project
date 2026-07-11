@@ -57,7 +57,7 @@ function App() {
   const forecastDays = useMemo(
     () => (weather ? getForecastDays(weather.daily.time) : []),
     [weather],
-  );
+  )
 
   return (
     <>
