@@ -1,8 +1,4 @@
-function Button() {
-    return (
-        <button>
-            Hello, Welcome user!
-        </button>
-    )
+function App() {
+    return <h1>Hello React</h1>;
 }
-export default Button;
+export default App;
