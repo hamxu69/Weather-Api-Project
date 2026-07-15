@@ -1,7 +1,7 @@
 function App() {
     function DisplayFunc() {
         const InputField = document.querySelector('.Input');
-        let Name = '';
+        let Name = '':
         Name = InputField.value;
     }
     return (
