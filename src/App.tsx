@@ -1,52 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { DailyForecast } from "@/components/DailyForecast";
-import { Header } from "@/components/Header";
-import { Hero } from "@/components/Hero";
-import { HourlyForecast } from "@/components/HourlyForecast";
-import { SearchBar } from "@/components/SearchBar";
-import { StatsCards } from "@/components/StatsCards";
-import { WeatherError } from "@/components/WeatherError";
-import { WeatherSkeleton } from "@/components/WeatherSkeleton";
-import { useUnitSettings } from "@/hooks/useUnitSettings";
-import { fetchWeather } from "@/services/weatherApi";
-import type { WeatherData } from "@/types/weather";
-import { getForecastDays } from "@/utils/weather";
-
-const DEFAULT_CITY = "lahore";
-
 function App() {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [hasError, setHasError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDay, setSelectedDay] = useState("Monday");
-  const {
-    units,
-    setUnits,
-    updateTemperature,
-    updateWind,
-    updatePrecipitation,
-    formatTemp,
-    formatWind,
-    formatPrecip,
-    windLabel,
-    precipLabel,
-  } = useUnitSettings();
-
-  const loadWeather = useCallback(async (city: string) => {
-    setIsLoading(true);
-    setHasError(false);
-
-    try {
-      const data = await fetchWeather(city);
-      const days = getForecastDays(data.daily.time);
-      setWeather(data);
-      setSelectedDay(days[0] ?? "Monday");
-    } catch (error) {
-      console.error(error);
-      setWeather(null);
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
+    function DisplayFunc() {
+        const InputField = document.querySelector('.Input');
+        let Name = '':
+        Name = InputField.value;
     }
   }, []);
 
