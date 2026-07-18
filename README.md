@@ -16,4 +16,4 @@ A responsive weather application built with React, TypeScript, and Open-Meteo AP
 - Tailwind CSS
 
 ## Live Demo
-https://hamxu69.github.io/Weather-Api-Project/
+[https://weather-api-project-2uhx0j41m-hamxu69s-projects.vercel.app/]
